@@ -1,32 +1,45 @@
-import React from 'react';
-import Product from './Product';
-import Section from './Section';
-import BookList from './BookList';
-import favouriteBooks from '../books.json';
+import React, { Component } from 'react';
+import Layout from './Layout/Layout';
+// import Counter from './Counter';
+import TaskList from './TaskList';
+import TaskEditor from './TaskEditor';
+import createTask from '../utils/creare-task';
 
-export default function App() {
-  return (
-    <>
-      <BookList books={favouriteBooks} />
-      <h1>Welcome!</h1>
+export default class App extends Component {
+  state = {
+    tasks: [],
+  };
 
-      <Section>
-        <Product
-          // imgUrl="https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?dpr=2&h=480&w=640"
-          name="Tacos With Lime"
-          price={20.99}
-          quantity={30}
-        />
-      </Section>
+  // імутабельна обнова, на базі попереднього робити новий
+  // та не міняти на пряму по силці
+  addTask = () => {
+    const task = createTask();
 
-      <Section title="Recommended">
-        <Product
-          imgUrl="https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg?dpr=2&h=480&w=640"
-          name="Fries and Burger"
-          price={15.75}
-          quantity={100}
-        />
-      </Section>
-    </>
-  );
+    this.setState(prevState => {
+      return {
+        tasks: [...prevState.tasks, task],
+      };
+    });
+  };
+
+  removeTask = taskId => {
+    this.setState(prevState => {
+      return {
+        tasks: prevState.tasks.filter(task => task.id !== taskId),
+      };
+    });
+  };
+
+  render() {
+    const { tasks } = this.state;
+
+    return (
+      <Layout>
+        <TaskEditor onAddTask={this.addTask} />
+        {tasks.length > 0 && (
+          <TaskList tasks={tasks} onRemoveTask={this.removeTask} />
+        )}
+      </Layout>
+    );
+  }
 }
